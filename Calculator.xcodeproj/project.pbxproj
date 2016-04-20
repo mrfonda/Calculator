@@ -97,12 +97,9 @@
 		764EB0DE1CC64E0400BF52D0 /* Calculator */ = {
 			isa = PBXGroup;
 			children = (
-				764EB0DF1CC64E0400BF52D0 /* AppDelegate.swift */,
 				764EB0E11CC64E0400BF52D0 /* ViewController.swift */,
 				764EB0E31CC64E0400BF52D0 /* Main.storyboard */,
-				764EB0E61CC64E0400BF52D0 /* Assets.xcassets */,
-				764EB0E81CC64E0400BF52D0 /* LaunchScreen.storyboard */,
-				764EB0EB1CC64E0400BF52D0 /* Info.plist */,
+				76B0CF361CC65023005F4303 /* Supporting files */,
 			);
 			path = Calculator;
 			sourceTree = "<group>";
@@ -123,6 +120,17 @@
 				764EB1011CC64E0400BF52D0 /* Info.plist */,
 			);
 			path = CalculatorUITests;
+			sourceTree = "<group>";
+		};
+		76B0CF361CC65023005F4303 /* Supporting files */ = {
+			isa = PBXGroup;
+			children = (
+				764EB0DF1CC64E0400BF52D0 /* AppDelegate.swift */,
+				764EB0E61CC64E0400BF52D0 /* Assets.xcassets */,
+				764EB0E81CC64E0400BF52D0 /* LaunchScreen.storyboard */,
+				764EB0EB1CC64E0400BF52D0 /* Info.plist */,
+			);
+			name = "Supporting files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -484,6 +492,7 @@
 				764EB1061CC64E0400BF52D0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		764EB1071CC64E0400BF52D0 /* Build configuration list for PBXNativeTarget "CalculatorTests" */ = {
 			isa = XCConfigurationList;
@@ -492,6 +501,7 @@
 				764EB1091CC64E0400BF52D0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		764EB10A1CC64E0400BF52D0 /* Build configuration list for PBXNativeTarget "CalculatorUITests" */ = {
 			isa = XCConfigurationList;
@@ -500,6 +510,7 @@
 				764EB10C1CC64E0400BF52D0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
