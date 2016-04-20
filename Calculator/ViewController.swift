@@ -155,7 +155,12 @@ class ViewController: UIViewController {
     
     var displayValue : Double {
         get {
+            if NSNumberFormatter().numberFromString(display.text!) == nil {
+                return 0.0
+            }
+            else {
             return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
+            }
         }
         set{
             display.text = "\(newValue)"
