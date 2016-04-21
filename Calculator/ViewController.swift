@@ -47,6 +47,7 @@ class ViewController: UIViewController {
             }
         }
     }
+    //lalala
     var operandStack = Array<Double>()
     var lastOperator = ""
     
