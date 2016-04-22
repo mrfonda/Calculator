@@ -11,9 +11,12 @@ import UIKit
 class ViewController: UIViewController {
 
     var userIsInTheMiddleOfTypingANumer: Bool = false
+    var brain = CalculatorBrain()
     
     @IBOutlet weak var display: UILabel!
 
+    @IBOutlet weak var expressionDisplay: UILabel!
+    
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
         if userIsInTheMiddleOfTypingANumer {
@@ -29,6 +32,7 @@ class ViewController: UIViewController {
     @IBAction func negative() {
         display.text = String(-NSNumberFormatter().numberFromString(display.text!)!.doubleValue)
     }
+    
     @IBAction func backSpace() {
         if display.text != "0.0" && display.text != "0"  {
 //            var value = display.text!
@@ -39,6 +43,7 @@ class ViewController: UIViewController {
             userIsInTheMiddleOfTypingANumer = false
         }
     }
+    
     @IBAction func pasteSpecialValue(sender: UIButton) {
         userIsInTheMiddleOfTypingANumer = true
         if let mathematicalSymbol = sender.currentTitle {
@@ -63,9 +68,12 @@ class ViewController: UIViewController {
 
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumer = false
-        operandStack.append(displayValue)
-        print("\(operandStack)  \(lastOperator)")
-
+        if let result = brain.pushOperand(displayValue) {
+            displayValue = result
+        }
+        else {
+            displayValue = 0
+        }
     }
     
     var equalsPressed = false
@@ -78,44 +86,13 @@ class ViewController: UIViewController {
         }
         if !operandStack.isEmpty {
             let lastOperand = operandStack.last
-            operate(lastOperator)
+           // operate(lastOperator)
             operandStack.append(lastOperand!)
             equalsPressed = true
         }
         
     }
     
-    func operate (operation : String) {
-        switch operation {
-        case "×": performOperation {$0 * $1}
-        case "÷": performOperation {$1 / $0}
-        case "−": performOperation {$1 - $0}
-        case "+": performOperation {$0 + $1}
-        case "√": performOperation {sqrt($0)}
-        case "sin": performOperation {sin($0)}
-        case "cos": performOperation {cos($0)}
-        case "tan": performOperation {tan($0)}
-        case "log": performOperation {log10($0)}
-        default:
-            break
-        }
-    }
-    
-    @IBAction func immidiateOperation(sender: AnyObject) {
-        if equalsPressed {
-            equalsPressed = false
-        }
-        operandStack.removeAll()
-        
-        let operation = sender.currentTitle!
-        
-        enter()
-        
-        operate(operation!)
-        
-//        lastOperator = ""
-        
-    }
     
     @IBAction func storedOperation(sender: UIButton) {
         
@@ -127,31 +104,15 @@ class ViewController: UIViewController {
         if userIsInTheMiddleOfTypingANumer {
             enter()
         }
-        
-        
-        
-        operate(lastOperator)
-        
-        let operation = sender.currentTitle!
-        lastOperator = operation
-         print(lastOperator)
-        
-    }
-    
-    @nonobjc
-    func performOperation (operation: (Double, Double) -> Double ) {
-        if operandStack.count >= 2 {
-            displayValue = operation(operandStack.removeLast(), operandStack.removeLast())
-            enter()
+        if let operation = sender.currentTitle {
+            if let result = brain.performOperation(operation) {
+            displayValue = result
+            } else
+            {
+                displayValue = 0
+            }
         }
-    }
-    
-    func performOperation (operation : Double -> Double) {
-        if operandStack.count >= 1 {
-            displayValue = operation(operandStack.removeLast())
-            enter()
-            
-        }
+        
     }
     
     var displayValue : Double {
