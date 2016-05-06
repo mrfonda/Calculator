@@ -27,6 +27,7 @@ class ViewController: UIViewController {
             display.text = digit
         }
         userIsInTheMiddleOfTypingANumer = true
+        userIsInTheMiddleOfTypingANumer = true
     }
     
     @IBAction func negative() {
