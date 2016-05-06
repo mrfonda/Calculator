@@ -9,12 +9,12 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    
     var userIsInTheMiddleOfTypingANumer: Bool = false
     var brain = CalculatorBrain()
     
     @IBOutlet weak var display: UILabel!
-
+    
     @IBOutlet weak var expressionDisplay: UILabel!
     
     @IBAction func appendDigit(sender: UIButton) {
@@ -35,7 +35,7 @@ class ViewController: UIViewController {
     
     @IBAction func backSpace() {
         if display.text != "0.0" && display.text != "0"  {
-//            var value = display.text!
+            //            var value = display.text!
             display.text = display.text!.substringToIndex(display.text!.characters.endIndex.predecessor())
         }
         if (display.text?.isEmpty)! {
@@ -47,28 +47,38 @@ class ViewController: UIViewController {
     @IBAction func pasteSpecialValue(sender: UIButton) {
         userIsInTheMiddleOfTypingANumer = true
         if let mathematicalSymbol = sender.currentTitle {
-            if mathematicalSymbol == "π" {
-                display.text = String(M_PI)
+//            if let constantValue = brain.constantValues[mathematicalSymbol] {
+//                displayValue = constantValue
+//            }
+            if let result = brain.pushConstant(mathematicalSymbol) {
+                displayValue = result
+            }
+            else {
+                displayValue = 0
             }
         }
+        
     }
-    //lalala
-    var operandStack = Array<Double>()
-    var lastOperator = ""
+    
+    //     var operandStack = Array<Double>()
+    //    var lastOperator = ""
     
     @IBAction func cancel() {
-        operandStack = []
         displayValue = 0
-        equalsPressed = false
         userIsInTheMiddleOfTypingANumer = false
-
+        brain.cancel()
+        expressionDisplay.text = brain.description
+        
     }
     
-
-
+    
+    //    @IBAction func setVariable(sender: UIButton) {
+    //        brain.pushOperand(displayValue!)
+    //    }
+    
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumer = false
-        if let result = brain.pushOperand(displayValue) {
+        if let result = brain.pushOperand(displayValue!) {
             displayValue = result
         }
         else {
@@ -76,37 +86,15 @@ class ViewController: UIViewController {
         }
     }
     
-    var equalsPressed = false
-    
-    @IBAction func equals() {
-        
-        
-        if userIsInTheMiddleOfTypingANumer {
-            enter()
-        }
-        if !operandStack.isEmpty {
-            let lastOperand = operandStack.last
-           // operate(lastOperator)
-            operandStack.append(lastOperand!)
-            equalsPressed = true
-        }
-        
-    }
-    
     
     @IBAction func storedOperation(sender: UIButton) {
-        
-        if equalsPressed {
-            equalsPressed = false
-            operandStack.removeLast()
-        }
-        
+
         if userIsInTheMiddleOfTypingANumer {
             enter()
         }
         if let operation = sender.currentTitle {
             if let result = brain.performOperation(operation) {
-            displayValue = result
+                displayValue = result
             } else
             {
                 displayValue = 0
@@ -115,20 +103,57 @@ class ViewController: UIViewController {
         
     }
     
-    var displayValue : Double {
-        get {
-            if NSNumberFormatter().numberFromString(display.text!) == nil {
-                return 0.0
-            }
-            else {
-            return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
+    @IBAction func setVariableValue(sender: UIButton) {
+        if let variableToSet = sender.currentTitle {
+            brain.variableValues[String(variableToSet.characters.dropFirst())] = displayValue
+        }
+        print(brain.variableValues)
+    }
+    
+    @IBAction func getVariableValue(sender: UIButton) {
+        userIsInTheMiddleOfTypingANumer = true
+        if let variableSymbol = sender.currentTitle {
+            if let result = brain.pushVariable(variableSymbol) {
+                displayValue = result
+            } else {
+                displayValue = 0
             }
         }
-        set{
-            display.text = "\(newValue)"
-            userIsInTheMiddleOfTypingANumer = false
+       
+        if sender.currentTitle != nil {
+            if let variableToGet = brain.variableValues[sender.currentTitle!] {
+                displayValue = variableToGet
+            }
         }
     }
-
+    
+    var displayValue : Double? {
+        get {
+            
+            if let doubleValue = Double(display.text!) {
+                return doubleValue
+            }
+            else {
+                return 0.0
+            }
+            //            if String(UTF8String: display.text!) == nil {
+            //                return 0.0
+            //            }
+            //            else {
+            //                return Double(display.text!)!
+            //            }
+        }
+        set{
+            
+            if let valueString = newValue {
+                display.text = String(valueString)
+            } else {
+                display.text = nil
+            }
+            userIsInTheMiddleOfTypingANumer = false
+            expressionDisplay.text = brain.description
+        }
+    }
+    
 }
 

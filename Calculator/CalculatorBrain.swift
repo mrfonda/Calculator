@@ -7,25 +7,27 @@
 //
 
 import Foundation
-class CalculatorBrain
+
+class CalculatorBrain2016
 {
     private enum Op: CustomStringConvertible
     {
         case Operand(Double)
         case UnaryOperation(String, Double -> Double, Int) // operation name, operation function, operation priority
         case BinaryOperation(String, (Double, Double) -> Double, Int) // operation name, operation function, operation priority
-//        case Bracket(String)
+        //        case Bracket(String)
+        
         var description : String {
             get {
                 switch self {
-                    case .Operand (let operand):
-                        return "\(operand)"
-                    case .UnaryOperation (let symbol, _ , _):
-                        return symbol
-                    case .BinaryOperation(let symbol, _ , _):
-                        return symbol
-//                    case .Bracket(let symbol):
-//                        return symbol
+                case .Operand (let operand):
+                    return "\(operand)"
+                case .UnaryOperation (let symbol, _ , _):
+                    return symbol
+                case .BinaryOperation(let symbol, _ , _):
+                    return symbol
+                    //                    case .Bracket(let symbol):
+                    //                        return symbol
                 }
             }
         }
@@ -51,8 +53,11 @@ class CalculatorBrain
     
     private var knownOps = [String:Op]() //dictionary
     
-//    private var Brackets = [String:String]()
+    //    private var Brackets = [String:String]()
     private var Priority = [String:Int]()
+    
+    //2016 Stanford course 
+    
     
     init () {
         func learnOp (op: Op) {
@@ -69,11 +74,12 @@ class CalculatorBrain
         learnOp(Op.UnaryOperation("cos", cos, 4))
         learnOp(Op.UnaryOperation("tan", tan, 4))
         learnOp(Op.UnaryOperation("log", log10, 4))
-//        // Brackets
-//        Brackets["("] = "OpenBracket"
-//        Brackets[")"] = "CloseBracket"
+        //        // Brackets
+        //        Brackets["("] = "OpenBracket"
+        //        Brackets[")"] = "CloseBracket"
         
     }
+    
     
     private func evaluate(ops: [Op]) -> (result: Double?, remainingOps: [Op]) {
         if !ops.isEmpty {
@@ -133,19 +139,19 @@ class CalculatorBrain
                             rpnOpStack.append(opStack.last!)
                         }
                     }
-    
+                    
                 }
                 
-             
-//            case .Bracket(_) :
-//                opStack.append(op)
                 
-
+                //            case .Bracket(_) :
+                //                opStack.append(op)
+                
+                
             }
             
         }
         
-
+        
         
         return rpnOpStack
     }
