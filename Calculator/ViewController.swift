@@ -34,6 +34,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func backSpace() {
+        if userIsInTheMiddleOfTypingANumer {
         if display.text != "0.0" && display.text != "0"  {
             //            var value = display.text!
             display.text = display.text!.substringToIndex(display.text!.characters.endIndex.predecessor())
@@ -42,26 +43,11 @@ class ViewController: UIViewController {
             display.text = "0"
             userIsInTheMiddleOfTypingANumer = false
         }
-    }
-    
-    @IBAction func pasteSpecialValue(sender: UIButton) {
-        userIsInTheMiddleOfTypingANumer = true
-        if let mathematicalSymbol = sender.currentTitle {
-//            if let constantValue = brain.constantValues[mathematicalSymbol] {
-//                displayValue = constantValue
-//            }
-            if let result = brain.pushConstant(mathematicalSymbol) {
-                displayValue = result
-            }
-            else {
-                displayValue = 0
-            }
+        } else {
+            displayValue = brain.undo()
         }
-        
     }
     
-    //     var operandStack = Array<Double>()
-    //    var lastOperator = ""
     
     @IBAction func cancel() {
         displayValue = 0
@@ -77,13 +63,13 @@ class ViewController: UIViewController {
     //    }
     
     @IBAction func enter() {
+        
+        
+        if userIsInTheMiddleOfTypingANumer,  let operand = displayValue {
+                 displayValue = brain.pushOperand(operand)
+        }
+        
         userIsInTheMiddleOfTypingANumer = false
-        if let result = brain.pushOperand(displayValue!) {
-            displayValue = result
-        }
-        else {
-            displayValue = 0
-        }
     }
     
     
@@ -93,12 +79,7 @@ class ViewController: UIViewController {
             enter()
         }
         if let operation = sender.currentTitle {
-            if let result = brain.performOperation(operation) {
-                displayValue = result
-            } else
-            {
-                displayValue = 0
-            }
+            displayValue = brain.performOperation(operation)
         }
         
     }
@@ -108,12 +89,13 @@ class ViewController: UIViewController {
             brain.variableValues[String(variableToSet.characters.dropFirst())] = displayValue
         }
         print(brain.variableValues)
+        userIsInTheMiddleOfTypingANumer = false
     }
     
     @IBAction func getVariableValue(sender: UIButton) {
         userIsInTheMiddleOfTypingANumer = true
         if let variableSymbol = sender.currentTitle {
-            if let result = brain.pushVariable(variableSymbol) {
+            if let result = brain.pushOperand(variableSymbol) {
                 displayValue = result
             } else {
                 displayValue = 0
@@ -148,7 +130,7 @@ class ViewController: UIViewController {
             if let valueString = newValue {
                 display.text = String(valueString)
             } else {
-                display.text = nil
+                display.text = " "
             }
             userIsInTheMiddleOfTypingANumer = false
             expressionDisplay.text = brain.description

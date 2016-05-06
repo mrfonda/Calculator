@@ -156,18 +156,24 @@
                                                         <color key="backgroundColor" red="0.40000000600000002" green="0.40000000600000002" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
                                                         <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                                        <state key="normal">
+                                                        <state key="normal" title="e">
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         </state>
+                                                        <connections>
+                                                            <action selector="storedOperation:" destination="BYZ-38-t0r" eventType="touchUpInside" id="aXs-yO-Er8"/>
+                                                        </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t0q-qo-g7q">
                                                         <rect key="frame" x="228" y="0.0" width="104" height="52"/>
                                                         <color key="backgroundColor" red="0.40000000600000002" green="0.40000000600000002" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
                                                         <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                                        <state key="normal">
+                                                        <state key="normal" title="^">
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         </state>
+                                                        <connections>
+                                                            <action selector="storedOperation:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Kie-BQ-rIt"/>
+                                                        </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nYc-qo-2Jb">
                                                         <rect key="frame" x="342" y="0.0" width="104" height="52"/>
@@ -217,7 +223,7 @@
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         </state>
                                                         <connections>
-                                                            <action selector="immidiateOperation:" destination="BYZ-38-t0r" eventType="touchUpInside" id="beU-yL-3Tp"/>
+                                                            <action selector="storedOperation:" destination="BYZ-38-t0r" eventType="touchUpInside" id="sTD-KT-h7A"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dbx-4V-QQg">
@@ -250,7 +256,7 @@
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         </state>
                                                         <connections>
-                                                            <action selector="pasteSpecialValue:" destination="BYZ-38-t0r" eventType="touchUpInside" id="O5g-nk-9Cy"/>
+                                                            <action selector="storedOperation:" destination="BYZ-38-t0r" eventType="touchUpInside" id="bkf-lN-kYn"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>

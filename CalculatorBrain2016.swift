@@ -16,7 +16,7 @@ class CalculatorBrain
         case UnaryOperation(String, Double -> Double) // operation name, operation function, operation priority,
         case BinaryOperation(String, (Double, Double) -> Double, Int) // operation name, operation function, operation priority
         case Variable(String)
-        case Constant(String)
+        case Constant(String, () -> Double)
         var description : String {
             get {
                 switch self {
@@ -24,7 +24,7 @@ class CalculatorBrain
                     return "\(operand)"
                 case .Variable (let operand):
                     return operand
-                case .Constant (let operand):
+                case .Constant (let operand, _):
                     return operand
                 case .UnaryOperation (let symbol, _ ):
                     return symbol
@@ -45,25 +45,22 @@ class CalculatorBrain
         }
         
     }
-
-        var description : String {
-            get {
-                var (descriptionStr, remainder, _) = postfixToInfix(opStackRPN)
+    
+    var description : String {
+        get {
+            var (descriptionStr, remainder, _) = description(opStackRPN)
+            
+            while !remainder.isEmpty {
+                var result : String
                 
-                while !remainder.isEmpty {
-                    var result : String?
-                    print("\(opStackRPN) = \(result) with \(remainder) left over")
-                    (result, remainder, _) = postfixToInfix(remainder)
-                    descriptionStr = result! + ", " + descriptionStr!
-                }
-                if descriptionStr != nil {
-                    return descriptionStr! + "="
-                } else {
-                    return " "
-                }
-                
+                (result, remainder, _) = description(remainder)
+                descriptionStr = result + ", " + descriptionStr
             }
+            print("\(opStackRPN) = \(descriptionStr)")
+            return descriptionStr + "="
+            
         }
+    }
     
     private var opStackRPN = [Op]() // Reverse Polish notation for calculations
     
@@ -78,10 +75,6 @@ class CalculatorBrain
     
     var variableValues = [String:Double]()
     
-    var constantValues = [String:Double]()
-    
-    
-    
     init () {
         
         func learnOp (op: Op) {
@@ -89,8 +82,8 @@ class CalculatorBrain
         }
         
         //Constants
-        constantValues["π"] = M_PI
-        constantValues["e"] = M_E
+        learnOp(Op.Constant("π", {M_PI}))
+        learnOp(Op.Constant("e", {M_E}))
         
         //Binary operations
         learnOp(Op.BinaryOperation("×", *, 2))
@@ -121,28 +114,12 @@ class CalculatorBrain
         return evaluate()
     }
     
-    // Adding a remembered variable
     
-    func pushVariable( variable : String) -> Double? { // Push a variable to stack
-        if variableValues[variable] != nil { // if variable is present in variable dictionary
-            opStackRPN.append(Op.Variable(variable)) // push variable
-            return evaluate() // evaluate stack
-        } else { // if variable is !present in variable dictionary
-            print("Variable \(variable) is not present!") // print error
-            return nil
-        }
-    }
+    // Adding a constant or variable
     
-    // Adding a constant
-    
-    func pushConstant( constant : String) -> Double? {
-        if constantValues[constant] != nil {
-            opStackRPN.append(Op.Constant(constant))
-            return evaluate()
-        } else{
-            print("Constant \(constant) is not present!")
-            return nil
-        }
+    func pushOperand( constant : String) -> Double? {
+        opStackRPN.append(Op.Variable(constant))
+        return evaluate()
     }
     
     // Adding binary or unary operation to the stack and evaluating mathematical expression from stack
@@ -166,7 +143,7 @@ class CalculatorBrain
         Ops.forEach {outputStr += $0.description + " "}
         return outputStr
     }
-
+    
     
     //// Evaluating
     
@@ -185,28 +162,20 @@ class CalculatorBrain
             var remainingOps = ops
             let op = remainingOps.removeLast()
             switch op {
-            case .Operand( let operand) :
+            case .Operand( let operand):
                 return (operand, remainingOps)
-            case .Variable( let variable) :
+            case .Variable( let variable):
                 if let operand = variableValues[variable] {
                     return (operand, remainingOps)
-                } else{
-                    print("\(variable) is not convertable to Double!")
-                    return (nil, remainingOps)
                 }
-            case .Constant( let constant) :
-                if let operand = constantValues[constant] {
-                    return (operand, remainingOps)
-                } else{
-                    print("\(constant) is not convertable to Double!")
-                    return (nil, remainingOps)
-                }
+            case .Constant(_ , let constantValue ):
+                return (constantValue(), remainingOps)
             case .UnaryOperation(_, let operation) :
                 let operandEvaluation = evaluate(remainingOps)
                 if let operand = operandEvaluation.result {
                     return (operation(operand), operandEvaluation.remainingOps)
                 }
-            case .BinaryOperation(_, let operation, _) :
+            case .BinaryOperation(_, let operation, _):
                 let operand1Evaluation = evaluate(remainingOps)
                 if let operand1 = operand1Evaluation.result {
                     let operand2Evaluation = evaluate(operand1Evaluation.remainingOps)
@@ -219,7 +188,7 @@ class CalculatorBrain
         return (nil,ops)
     }
     
-    private func postfixToInfix (ops: [Op]) -> (result: String?, remainingOps: [Op], precedence : Int) {
+    private func description (ops: [Op]) -> (infixPart: String, remainingOps: [Op], precedence : Int) {
         if !ops.isEmpty {
             var remainingOps = ops
             let op = remainingOps.removeLast()
@@ -227,44 +196,32 @@ class CalculatorBrain
             case .Operand( let operand) :
                 return (String(operand), remainingOps, op.priority)
             case .Variable( let variable) :
-                if variableValues[variable] != nil {
-                    return (variable, remainingOps, op.priority)
-                } else{
+                if variableValues[variable] == nil {
                     print("\(variable) is not convertable to Double!")
-                    return ("?", remainingOps, op.priority)
                 }
-            case .Constant( let constant) :
-                if constantValues[constant] != nil {
-                    return (constant, remainingOps, op.priority)
-                } else{
-                    print("\(constant) is not convertable to Double!")
-                    return ("?", remainingOps, op.priority)
-                }
+                return (variable, remainingOps, op.priority)
+            case .Constant( let constant, _) :
+                return (constant, remainingOps, op.priority)
             case .UnaryOperation(let operation, _ ) :
-                let operandEvaluation = postfixToInfix(remainingOps)
-                if let operand = operandEvaluation.result {
-                    return ("\(operation)(\(operand))", operandEvaluation.remainingOps, op.priority)
-                }
+                let descriptionEvaluation = description(remainingOps)
+                return ("\(operation)(\(descriptionEvaluation.infixPart))", descriptionEvaluation.remainingOps, op.priority)
             case .BinaryOperation(let operation, _ ,  let precedence) :
-                let operand1Evaluation = postfixToInfix(remainingOps)
-                if var operand1 = operand1Evaluation.result {
-                    let operand2Evaluation = postfixToInfix(operand1Evaluation.remainingOps)
-                    if var operand2 = operand2Evaluation.result {
-                        
-                        if precedence > operand1Evaluation.precedence {
-                            operand1 = "(" + operand1 + ")"
-                        }
-                        if precedence > operand2Evaluation.precedence {
-                            operand2 = "(" + operand2 + ")"
-                        }
-                         return (operand2 + operation + operand1, operand2Evaluation.remainingOps, precedence)
-                    }
+                var descriptionRight = description(remainingOps)
+                var descriptionLeft = description(descriptionRight.remainingOps)
+                
+                if precedence > descriptionRight.precedence {
+                    descriptionRight.infixPart = "(" + descriptionRight.infixPart + ")"
                 }
+                if precedence > descriptionLeft.precedence {
+                    descriptionLeft.infixPart = "(" + descriptionLeft.infixPart + ")"
+                }
+                return (descriptionLeft.infixPart + operation + descriptionRight.infixPart, descriptionLeft.remainingOps, precedence)
+                
             }
         }
         return ("?",ops, Int.max)
     }
-
+    
     
     //// Infix notation stack of operands to postfix notation stack convertion - for future use - not tested
     
@@ -307,7 +264,19 @@ class CalculatorBrain
         return rpnOpStack
     }
     
-    
+    func undo () -> Double? {
+        if !opStackRPN.isEmpty {
+            
+            let operand = opStackRPN.removeLast()
+            switch operand {
+            case .Operand ( let opVal) :
+                return opVal                
+            default:
+                return nil
+            }
+        }
+        return nil
+    }
     
     ////Section for future use
     
@@ -335,4 +304,4 @@ class CalculatorBrain
     
     
     
-    }
+}
